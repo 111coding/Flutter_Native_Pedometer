@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' as Cuperticno;
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_native_pedometer/flutter_native_pedometer.dart';
 
 void main() {
@@ -16,6 +16,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool isWalking = false;
+  int step = 0;
+
   @override
   void initState() {
     super.initState();
@@ -23,11 +26,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initBridge() async {
-    int? lastCount = await FlutterNativePedometer.getWalkData(DateTime(2022, 2, 18, 10, 0));
+    bool isRunnig = await FlutterNativePedometer.isRunning();
 
-    print("lastCount $lastCount");
+    step = await FlutterNativePedometer.getWalkData(DateTime(2022, 2, 18, 10, 0)) ?? 0;
+
+    setState(() {});
+
     FlutterNativePedometer.getWalkStream().listen((event) {
-      print("event $event");
+      step += event as int;
+      setState(() {});
     });
   }
 
@@ -38,8 +45,25 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: const Center(
-          child: Text('test'),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("$step"),
+              Cuperticno.CupertinoSwitch(
+                value: isWalking,
+                onChanged: (v) async {
+                  if (v) {
+                    step = await FlutterNativePedometer.startWalker(initStepValue: step);
+                  } else {
+                    step = await FlutterNativePedometer.stopWalker();
+                  }
+                  isWalking = v;
+                  setState(() {});
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -73,9 +73,22 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
     if (call.method == "get_walk_data") {
       val db = DbInstance.walkDatabase(context!!)
       val count = db!!.walkDao().getRecent((call.arguments as String).toLong())
-      // TODO 따로빼기(README 참조)
-      runWalkerService()
       result.success(count)
+    } else if(call.method == "is_running") {
+      result.success(isWalkerRunning())
+    } else if(call.method == "start_walker") {
+      val isRunning = isWalkerRunning();
+      if(!isRunning){
+        WalkerService.WALKING_COUNT = call.arguments as Int
+        mainActivity!!.startService(Intent(mainActivity!!, WalkerService::class.java))
+      }
+      result.success(WalkerService.WALKING_COUNT)
+    } else if(call.method == "stop_walker") {
+      val isRunning = isWalkerRunning();
+      if(isRunning){
+        mainActivity!!.stopService(Intent(mainActivity!!, WalkerService::class.java))
+      }
+      result.success(WalkerService.WALKING_COUNT)
     } else {
       result.notImplemented()
     }
@@ -86,12 +99,6 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
     eventChannel.setStreamHandler(null)
   }
 
-
-  fun runWalkerService(){
-    if(!isWalkerRunning()){
-      mainActivity!!.startService(Intent(mainActivity!!, WalkerService::class.java))
-    }
-}
 
   fun isWalkerRunning() : Boolean {
       val manager = mainActivity!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager

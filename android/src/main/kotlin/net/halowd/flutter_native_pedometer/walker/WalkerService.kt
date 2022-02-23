@@ -104,11 +104,15 @@ class WalkerService : Service() {
         WALKING_COUNT += nextCnt
         eventHandler?.event?.success(nextCnt)
 
+        updateRemoteView(nextCnt)
+
+        notificationManager?.notify(NOTIF_ID,notification)
+    }
+
+    private fun updateRemoteView(nextCnt : Int){
         remoteViews?.setTextViewText(getResourceId("tv_walker_count","id"),"$WALKING_COUNT")
         remoteViews?.setTextViewText(getResourceId("tv_walker_km","id"),"${String.format("%.1f", (WALKING_COUNT * 0.0065))}")
         remoteViews?.setTextViewText(getResourceId("tv_walker_cal","id"),"${String.format("%.0f", WALKING_COUNT * 0.033)}")
-
-        notificationManager?.notify(NOTIF_ID,notification)
     }
 
     private fun initNotification(){
@@ -131,8 +135,7 @@ class WalkerService : Service() {
         )
         
         
-        
-        remoteViews?.setTextViewText(getResourceId("tv_walker_count","id"),"$WALKING_COUNT")
+        updateRemoteView(WALKING_COUNT)
 
         val mBuilder  = NotificationCompat.Builder(this,  CHANNEL_ID)
             .setSmallIcon(getResourceId("ic_launcher","mipmap"))
