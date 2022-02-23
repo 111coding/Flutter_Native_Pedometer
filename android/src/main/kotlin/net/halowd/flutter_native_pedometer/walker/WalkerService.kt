@@ -175,7 +175,7 @@ class WalkerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         sensorManager?.unregisterListener(mEventListener)
-        db?.close();
+        DbInstance.close();
     }
 
 

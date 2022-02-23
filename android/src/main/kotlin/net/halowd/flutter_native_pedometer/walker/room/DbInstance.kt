@@ -18,4 +18,12 @@ object DbInstance {
         return walkDatabase!!
     }
 
+    @JvmStatic
+    fun close(){
+        walkDatabase?.close();
+        walkDatabase = null;
+    }
+
 }
+
+
