@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart' as Cuperticno;
 import 'dart:async';
 
 import 'package:flutter_native_pedometer/flutter_native_pedometer.dart';
+import 'package:flutter_native_pedometer_example/walker_gauge.dart';
 
 void main() {
   runApp(const MyApp());
@@ -49,6 +50,13 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: WalkerGauge(
+                  percent: 0.75,
+                  width: double.infinity,
+                ),
+              ),
               Text("$step"),
               Cuperticno.CupertinoSwitch(
                 value: isWalking,
