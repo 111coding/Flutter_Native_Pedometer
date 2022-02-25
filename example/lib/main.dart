@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initBridge() async {
-    bool isRunnig = await FlutterNativePedometer.isRunning();
+    isWalking = await FlutterNativePedometer.isRunning();
 
     step = await FlutterNativePedometer.getWalkData(DateTime(2022, 2, 18, 10, 0)) ?? 0;
 

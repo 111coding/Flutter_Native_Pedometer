@@ -143,7 +143,8 @@ class WalkerService : Service() {
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             // 클릭 시 메인 액티비티 가게
-            // .setContentIntent(PendingIntent.getActivity(this, 0, Intent(applicationContext, MainActivity::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
+            
+            .setContentIntent(PendingIntent.getActivity(this, 0, Intent(applicationContext, FlutterNativePedometerPlugin.mainActivity!!::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
 
         notification = mBuilder.build()
 
