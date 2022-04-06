@@ -34,6 +34,8 @@ import net.halowd.flutter_native_pedometer.walker.room.DbInstance
 import net.halowd.flutter_native_pedometer.walker.room.WalkDatabase
 import net.halowd.flutter_native_pedometer.FlutterNativePedometerPlugin
 
+import android.util.Log
+
 
 // import com.example.manbo.MainActivity
 import net.halowd.flutter_native_pedometer.R
@@ -63,11 +65,13 @@ class WalkerService : Service() {
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         stepCountSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
+
         val listner = object : StepListener{
             override fun onStep(step: Int) {
                 updateWalkerCount(step)
             }
         }
+
         if(stepCountSensor == null){
             // 가속도센서
             stepCountSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -78,6 +82,7 @@ class WalkerService : Service() {
             mEventListener = StepDetector()
             (mEventListener as StepDetector).setStepListener(listner)
         }
+
 
         sensorManager?.registerListener(mEventListener,stepCountSensor,SensorManager.SENSOR_DELAY_FASTEST)
     }
@@ -95,7 +100,7 @@ class WalkerService : Service() {
     private var remoteViews:RemoteViews? = null
 
     private fun getResourceId(resourceName : String, resourceType : String) : Int{
-        return FlutterNativePedometerPlugin.mainActivity!!.resources.getIdentifier(resourceName,resourceType, FlutterNativePedometerPlugin.mainActivity!!.packageName)
+        return applicationContext.resources.getIdentifier(resourceName,resourceType, applicationContext.packageName)
     }
 
 
@@ -130,21 +135,25 @@ class WalkerService : Service() {
 
         // 뷰
         remoteViews = RemoteViews(
-            FlutterNativePedometerPlugin.mainActivity!!.packageName,
+            applicationContext.packageName,
             getResourceId("walker_notification","layout")
         )
         
         
         updateRemoteView(WALKING_COUNT)
 
+
+        val cls = Class.forName(applicationContext.packageName + ".MainActivity")
+        val mainActivity = cls.newInstance()
+
         val mBuilder  = NotificationCompat.Builder(this,  CHANNEL_ID)
             .setSmallIcon(getResourceId("ic_launcher","mipmap"))
             .setContent(remoteViews)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_MAX)
+
             // 클릭 시 메인 액티비티 가게
-            
-            .setContentIntent(PendingIntent.getActivity(this, 0, Intent(applicationContext, FlutterNativePedometerPlugin.mainActivity!!::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
+            .setContentIntent(PendingIntent.getActivity(this, 0, Intent(applicationContext, mainActivity!!::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
 
         notification = mBuilder.build()
 

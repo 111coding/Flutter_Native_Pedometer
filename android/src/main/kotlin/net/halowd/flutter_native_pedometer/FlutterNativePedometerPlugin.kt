@@ -34,6 +34,8 @@ import net.halowd.flutter_native_pedometer.walker.room.WalkDatabase
 import net.halowd.flutter_native_pedometer.walker.WalkerEventChannelHaldler
 import net.halowd.flutter_native_pedometer.walker.WalkerService
 
+import android.util.Log
+
 class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   
   private lateinit var methodChannel : MethodChannel
@@ -79,6 +81,8 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
     } else if(call.method == "start_walker") {
       val isRunning = isWalkerRunning();
       if(!isRunning){
+        // for broadcast check
+        saveState(true)
         WalkerService.WALKING_COUNT = call.arguments as Int
         mainActivity!!.startService(Intent(mainActivity!!, WalkerService::class.java))
       }
@@ -86,6 +90,8 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
     } else if(call.method == "stop_walker") {
       val isRunning = isWalkerRunning();
       if(isRunning){
+        // for broadcast check
+        saveState(false)
         mainActivity!!.stopService(Intent(mainActivity!!, WalkerService::class.java))
       }
       result.success(WalkerService.WALKING_COUNT)
@@ -109,5 +115,12 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
           }
       }
       return isRunning;
+  }
+
+  // for broadcast check
+  fun saveState(value : Boolean){
+    val edit = context!!.getSharedPreferences("jadoo_walker", Context.MODE_PRIVATE)!!.edit()
+    edit!!.putBoolean("jadoo_walker",value)
+    edit!!.apply()
   }
 }
