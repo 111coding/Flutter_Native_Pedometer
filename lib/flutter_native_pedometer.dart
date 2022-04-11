@@ -37,6 +37,16 @@ class FlutterNativePedometer {
     if (result is int) {
       return result;
     }
+    return null;
+  }
+
+  static Future<int?> getRecent() async {
+    if (Platform.isIOS) return null;
+    final result = await _methodChannel.invokeMethod('get_recent');
+    if (result is int) {
+      return result;
+    }
+    return null;
   }
 
   static Stream<dynamic> getWalkStream() => _eventChannel.receiveBroadcastStream();

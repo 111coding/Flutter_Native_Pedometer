@@ -95,6 +95,9 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
         mainActivity!!.stopService(Intent(mainActivity!!, WalkerService::class.java))
       }
       result.success(WalkerService.WALKING_COUNT)
+    } else if(call.method == "get_recent") {
+      val recentCount = getSavedCount()
+      result.success(recentCount)
     } else {
       result.notImplemented()
     }
@@ -122,5 +125,10 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
     val edit = context!!.getSharedPreferences("jadoo_walker", Context.MODE_PRIVATE)!!.edit()
     edit!!.putBoolean("jadoo_walker",value)
     edit!!.apply()
+  }
+
+  fun getSavedCount() : Int{
+    val count = context!!.getSharedPreferences("jadoo_walker", Context.MODE_PRIVATE)!!.getInt("count",0)
+    return count
   }
 }

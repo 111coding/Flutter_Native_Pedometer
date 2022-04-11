@@ -109,15 +109,16 @@ class WalkerService : Service() {
         WALKING_COUNT += nextCnt
         eventHandler?.event?.success(nextCnt)
 
-        updateRemoteView(nextCnt)
+        updateRemoteView()
 
         notificationManager?.notify(NOTIF_ID,notification)
     }
 
-    private fun updateRemoteView(nextCnt : Int){
+    private fun updateRemoteView(){
         remoteViews?.setTextViewText(getResourceId("tv_walker_count","id"),"$WALKING_COUNT")
         remoteViews?.setTextViewText(getResourceId("tv_walker_km","id"),"${String.format("%.1f", (WALKING_COUNT * 0.0065))}")
         remoteViews?.setTextViewText(getResourceId("tv_walker_cal","id"),"${String.format("%.0f", WALKING_COUNT * 0.033)}")
+        saveCount()
     }
 
     private fun initNotification(){
@@ -140,7 +141,7 @@ class WalkerService : Service() {
         )
         
         
-        updateRemoteView(WALKING_COUNT)
+        updateRemoteView()
 
 
         val cls = Class.forName(applicationContext.packageName + ".MainActivity")
@@ -168,8 +169,24 @@ class WalkerService : Service() {
     }
 
 
+    fun saveCount() {
+        val edit = applicationContext.getSharedPreferences("jadoo_walker", Context.MODE_PRIVATE)!!.edit()
+        edit!!.putInt("count",WALKING_COUNT)
+        edit!!.apply()
+      }
+
+      fun getSavedCount() : Int{
+        val count = applicationContext.getSharedPreferences("jadoo_walker", Context.MODE_PRIVATE)!!.getInt("count",0)
+        return count
+      }
+
+
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+
+        if(WALKING_COUNT == 0){
+            WALKING_COUNT = getSavedCount()
+        }
 
         initDb()
 
