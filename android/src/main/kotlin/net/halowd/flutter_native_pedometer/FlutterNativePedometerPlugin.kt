@@ -48,6 +48,9 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     mainActivity = binding.activity;
+    methodChannel.setMethodCallHandler(this)
+    WalkerService.eventHandler = WalkerEventChannelHaldler()
+    eventChannel.setStreamHandler(WalkerService.eventHandler)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -61,14 +64,8 @@ class FlutterNativePedometerPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     context = flutterPluginBinding.getApplicationContext();
-
     methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_native_pedometer")
-    methodChannel.setMethodCallHandler(this)
-
-
     eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "flutter_native_pedometer_stream")
-    WalkerService.eventHandler = WalkerEventChannelHaldler()
-    eventChannel.setStreamHandler(WalkerService.eventHandler)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
