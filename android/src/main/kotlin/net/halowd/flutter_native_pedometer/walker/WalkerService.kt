@@ -36,6 +36,9 @@ import net.halowd.flutter_native_pedometer.FlutterNativePedometerPlugin
 
 import android.util.Log
 
+import java.util.*
+import java.text.SimpleDateFormat
+
 
 // import com.example.manbo.MainActivity
 import net.halowd.flutter_native_pedometer.R
@@ -45,6 +48,7 @@ class WalkerService : Service() {
 
     companion object {
         var WALKING_COUNT = 0
+        var recentTime = SimpleDateFormat("yyyyMMdd").format(Date())
         var eventHandler : WalkerEventChannelHaldler? = null
     }
 
@@ -106,7 +110,15 @@ class WalkerService : Service() {
 
     private fun updateWalkerCount(nextCnt : Int){
         db!!.walkDao().insert(nextCnt)
-        WALKING_COUNT += nextCnt
+
+        // day diff -> clear
+        val newTime = SimpleDateFormat("yyyyMMdd").format(Date())
+        if(recentTime.equals(newTime)){
+            WALKING_COUNT += nextCnt
+        }else{
+            WALKING_COUNT = nextCnt
+        }
+
         eventHandler?.event?.success(nextCnt)
 
         updateRemoteView()
