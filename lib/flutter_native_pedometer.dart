@@ -31,8 +31,16 @@ class FlutterNativePedometer {
     return result;
   }
 
-  static Future<int?> getWalkData(DateTime beginDate) async {
-    String beginDateString = Platform.isIOS ? "${beginDate.year}-${beginDate.month}-${beginDate.day} ${beginDate.hour}:${beginDate.minute}:${beginDate.second}" : "${beginDate.millisecondsSinceEpoch}";
+  static Future<int?> getWalkData(DateTime beginDate, {bool onlyToday = true}) async {
+    final today = DateTime.now();
+    DateTime date = beginDate;
+    if (onlyToday) {
+      if ("${today.year}${today.month}${today.day}" != "${beginDate.year}${beginDate.month}${beginDate.day}") {
+        date = DateTime(today.year, today.month, today.day);
+      }
+    }
+
+    String beginDateString = Platform.isIOS ? "${date.year}-${date.month}-${date.day} ${date.hour}:${date.minute}:${date.second}" : "${date.millisecondsSinceEpoch}";
     final result = await _methodChannel.invokeMethod('get_walk_data', beginDateString);
     if (result is int) {
       return result;
