@@ -77,9 +77,8 @@ public class PedometerStreamHandler: NSObject, FlutterStreamHandler {
         }
         // Emit step count event to Flutter
 
-        let currnetCount = pedometerData.numberOfSteps.intValue
-        let gap = currnetCount - self.recentCnt
-        self.recentCnt = currnetCount
+        let gap = event - self.recentCnt
+        self.recentCnt = event
 
         eventSink!(gap)
     }
