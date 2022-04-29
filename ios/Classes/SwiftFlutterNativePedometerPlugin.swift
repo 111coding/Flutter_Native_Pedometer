@@ -63,6 +63,8 @@ public class SwiftFlutterNativePedometerPlugin: NSObject, FlutterPlugin {
 // ========================= 만보기 B =========================
 // 이벤트 채널
 public class PedometerStreamHandler: NSObject, FlutterStreamHandler {
+
+    private var recentCnt = 0
     
     private let pedometer = CMPedometer()
     private var running = false
@@ -74,7 +76,9 @@ public class PedometerStreamHandler: NSObject, FlutterStreamHandler {
             return
         }
         // Emit step count event to Flutter
-        eventSink!(count)
+
+        self.recentCnt = count - self.recentCnt
+        eventSink!(self.recentCnt)
     }
 
     public func onListen(withArguments arguments: Any?, eventSink: @escaping FlutterEventSink) -> FlutterError? {
