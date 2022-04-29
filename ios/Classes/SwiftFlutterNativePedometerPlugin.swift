@@ -77,8 +77,11 @@ public class PedometerStreamHandler: NSObject, FlutterStreamHandler {
         }
         // Emit step count event to Flutter
 
-        self.recentCnt = count - self.recentCnt
-        eventSink!(self.recentCnt)
+        let currnetCount = pedometerData.numberOfSteps.intValue
+        let gap = currnetCount - self.recentCnt
+        self.recentCnt = currnetCount
+
+        eventSink!(gap)
     }
 
     public func onListen(withArguments arguments: Any?, eventSink: @escaping FlutterEventSink) -> FlutterError? {
